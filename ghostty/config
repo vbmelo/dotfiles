@@ -1,0 +1,21 @@
+### THEMES ###
+theme = Laser
+background-opacity = 0.8
+background-blur-radius = 30
+
+### FONTS ###
+font-size = 22
+cursor-style = bar
+
+### WINDOW ###
+window-save-state = always
+
+### STARTUP ###
+command = /bin/zsh -c "~/.config/ghostty/start-session.sh"
+
+### MISCELANEOUS ###
+macos-icon = custom-style
+macos-icon-frame = plastic
+macos-titlebar-style = transparent
+window-colorspace = "display-p3"
+mouse-hide-while-typing = true

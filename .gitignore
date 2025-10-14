@@ -1,0 +1,6 @@
+.DS_Store
+.zsh_history
+*.swp
+*.swo
+*~
+.backup/
