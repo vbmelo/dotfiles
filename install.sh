@@ -217,9 +217,43 @@ echo "   • Alt + Arrows       → Navigate panes"
 echo ""
 echo "✨ Happy coding!"
 
+# Optional: offer to source ~/.zshrc now
+echo ""
+echo "🔁  Zsh config — source ~/.zshrc (note about interactive shells)"
+echo "──────────────────────────────────────────────────────────────"
+echo ""
+read -p "Source ~/.zshrc now in this script process? (This affects only this script process — to apply in your shell run 'source ~/.zshrc'). Proceed? (y/N): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    # Sourcing inside this script will only affect the script process; still offer it for completeness
+    set +e
+    if source "$HOME/.zshrc" 2>/dev/null; then
+        echo "✅  ~/.zshrc sourced in this process."
+        echo "If you ran this script as a command, run in your interactive shell to apply:"
+        echo ""
+        echo "   source ~/.zshrc"
+        echo ""
+    else
+        echo "⚠️  Failed to source ~/.zshrc in the script process."
+        echo "Manual command to run in your interactive shell:" 
+        echo ""
+        echo "   source ~/.zshrc"
+        echo ""
+    fi
+    set -e
+else
+    echo "⏭️  Skipped sourcing ~/.zshrc. To apply changes in your shell, run:"
+    echo ""
+    echo "   source ~/.zshrc"
+    echo ""
+fi
+
 # Optional: offer to apply the new tmux config now and optionally kill tmux server
 echo ""
 if command -v tmux &>/dev/null; then
+    echo "🔁  TMUX configuration — reload or restart sessions"
+    echo "──────────────────────────────────────────────"
+    echo ""
     read -p "Apply new tmux config now? This will run 'tmux source-file ~/.tmux.conf'. (y/N): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -227,17 +261,28 @@ if command -v tmux &>/dev/null; then
         set +e
         tmux source-file "$HOME/.tmux.conf" 2>/dev/null
         if [ $? -eq 0 ]; then
-            echo "✅ tmux config reloaded (in sessions that accept it)."
+            echo "✅  tmux config reloaded (for sessions that accept it)."
+            echo ""
+            echo "If some sessions did not pick up the change, try these commands:" 
+            echo ""
+            echo "   Reload current session:  tmux source-file ~/.tmux.conf"
+            echo "   Force restart all sessions: tmux kill-server   # will terminate all tmux sessions"
+            echo ""
+            read -p "Kill all tmux sessions to force a full restart? This will terminate all tmux sessions. (y/N): " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                tmux kill-server 2>/dev/null && echo "✅  All tmux sessions killed. Start tmux again to use the new config." || echo "⚠️  Failed to kill tmux server or no tmux server running."
+            else
+                echo "⏭️  Skipped killing tmux server."
+            fi
         else
-            echo "⚠️ Could not reload tmux config into current session. If you're not inside a tmux session, run 'tmux source-file ~/.tmux.conf' from within one, or kill-server below to restart all sessions."
-        fi
-
-        read -p "Kill all tmux sessions to force a full restart? This will terminate all tmux sessions. (y/N): " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            tmux kill-server 2>/dev/null && echo "✅ All tmux sessions killed. Start tmux again to use the new config." || echo "⚠️ Failed to kill tmux server or no tmux server running."
-        else
-            echo "⏭️  Skipped killing tmux server."
+            echo "⚠️  Could not reload tmux config into the current session."
+            echo ""
+            echo "Try these commands manually in your shell:"
+            echo ""
+            echo "   tmux source-file ~/.tmux.conf"
+            echo "   tmux kill-server   # (will terminate all tmux sessions)"
+            echo ""
         fi
         set -e
     else
@@ -245,22 +290,4 @@ if command -v tmux &>/dev/null; then
     fi
 else
     echo "tmux not found on PATH; skipping tmux reload/kill prompts."
-fi
-
-# Optional: offer to source ~/.zshrc now
-echo ""
-read -p "Source ~/.zshrc now in this script process? Note: if you ran this script as a command, sourcing here won't affect your interactive shell. Run 'source ~/.zshrc' in your shell to apply changes there. Proceed? (y/N): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    # Sourcing inside this script will only affect the script process; still offer it for completeness
-    set +e
-    source "$HOME/.zshrc" 2>/dev/null
-    if [ $? -eq 0 ]; then
-        echo "✅ ~/.zshrc sourced in this process. If you launched this script as a standalone process, please run 'source ~/.zshrc' in your interactive shell to apply changes there." 
-    else
-        echo "⚠️ Failed to source ~/.zshrc in the script process. You can manually run: source ~/.zshrc"
-    fi
-    set -e
-else
-    echo "⏭️  Skipped sourcing ~/.zshrc. To apply changes in your shell, run: source ~/.zshrc"
 fi

@@ -35,11 +35,15 @@ if ! $TMUX_BIN has-session -t main 2>/dev/null; then
 	$TMUX_BIN new-window -t main:5 -n "Company Tools" -c ~/Projects/pareva-company-tools
 	$TMUX_BIN split-window -h -t main:5 -c ~/Projects/pareva-company-tools
 
-	# Window 6: Platform Tools (no split)
-	$TMUX_BIN new-window -t main:6 -n "ADB" -c ~/platform-tools
+	# Window 6: On Premise
+	$TMUX_BIN new-window -t main:6 -n "On Premise" -c ~/Projects/on-premise
+	$TMUX_BIN split-window -h -t main:6 -c ~/Projects/on-premise
 
-	# Window 7: Standard Terminal
-	$TMUX_BIN new-window -t main:7 -n "Terminal" -c ~/
+	# Window 7: Platform Tools (no split)
+	$TMUX_BIN new-window -t main:7 -n "ADB" -c ~/platform-tools
+
+	# Window 8: Standard Terminal
+	$TMUX_BIN new-window -t main:8 -n "Terminal" -c ~/
 
 	# Select the first window
 	$TMUX_BIN select-window -t main:1
