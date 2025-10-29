@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # ==========================
 # Dotfiles Installation Script
 # ==========================
@@ -120,8 +120,31 @@ echo ""
 echo "📝 Installing new configs..."
 
 # TMUX
-cp tmux/.tmux.conf "$HOME/.tmux.conf"
-echo "✅ TMUX config installed"
+TMUX_SRC="tmux/.tmux.conf"
+TMUX_DEST="$HOME/.tmux.conf"
+if [ -f "$TMUX_DEST" ]; then
+    echo ""
+    echo "Comparing $TMUX_DEST with $TMUX_SRC..."
+    DIFF_TMP="/tmp/dotfiles_diff_tmux_$$"
+    if diff -u "$TMUX_DEST" "$TMUX_SRC" > "$DIFF_TMP"; then
+        echo "No differences found between $TMUX_DEST and $TMUX_SRC. Skipping copy."
+    else
+        echo "Differences found between $TMUX_DEST and $TMUX_SRC:"
+        cat "$DIFF_TMP"
+        read -p "Replace $TMUX_DEST now? (y/N): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            cp "$TMUX_SRC" "$TMUX_DEST"
+            echo "✅ TMUX config installed"
+        else
+            echo "⏭️  Skipped TMUX config"
+        fi
+    fi
+    rm -f "$DIFF_TMP"
+else
+    cp "$TMUX_SRC" "$TMUX_DEST"
+    echo "✅ TMUX config installed"
+fi
 
 # Zsh (merge with existing)
 echo ""
@@ -139,11 +162,38 @@ else
 fi
 
 # Ghostty
-mkdir -p "$HOME/.config/ghostty"
-cp ghostty/config "$HOME/.config/ghostty/config"
-cp ghostty/start-session.sh "$HOME/.config/ghostty/start-session.sh"
-chmod +x "$HOME/.config/ghostty/start-session.sh"
-echo "✅ Ghostty config installed"
+GHOSTTY_DIR="$HOME/.config/ghostty"
+mkdir -p "$GHOSTTY_DIR"
+
+for f in config start-session.sh; do
+    SRC_FILE="ghostty/$f"
+    DEST_FILE="$GHOSTTY_DIR/$f"
+    if [ -f "$DEST_FILE" ]; then
+        echo ""
+        echo "Comparing $DEST_FILE with $SRC_FILE..."
+        DIFF_TMP="/tmp/dotfiles_diff_ghost_${f}_$$"
+        if diff -u "$DEST_FILE" "$SRC_FILE" > "$DIFF_TMP"; then
+            echo "No differences found between $DEST_FILE and $SRC_FILE. Skipping copy."
+        else
+            echo "Differences found between $DEST_FILE and $SRC_FILE:"
+            cat "$DIFF_TMP"
+            read -p "Replace $DEST_FILE now? (y/N): " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                cp "$SRC_FILE" "$DEST_FILE"
+                echo "✅ Ghostty $f installed"
+            else
+                echo "⏭️  Skipped $f"
+            fi
+        fi
+        rm -f "$DIFF_TMP"
+    else
+        cp "$SRC_FILE" "$DEST_FILE"
+        echo "✅ Ghostty $f installed"
+    fi
+done
+
+chmod +x "$GHOSTTY_DIR/start-session.sh"
 
 echo ""
 
@@ -166,3 +216,51 @@ echo "   • Ctrl+a + -         → Split horizontal"
 echo "   • Alt + Arrows       → Navigate panes"
 echo ""
 echo "✨ Happy coding!"
+
+# Optional: offer to apply the new tmux config now and optionally kill tmux server
+echo ""
+if command -v tmux &>/dev/null; then
+    read -p "Apply new tmux config now? This will run 'tmux source-file ~/.tmux.conf'. (y/N): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        # Temporarily disable errexit for optional commands
+        set +e
+        tmux source-file "$HOME/.tmux.conf" 2>/dev/null
+        if [ $? -eq 0 ]; then
+            echo "✅ tmux config reloaded (in sessions that accept it)."
+        else
+            echo "⚠️ Could not reload tmux config into current session. If you're not inside a tmux session, run 'tmux source-file ~/.tmux.conf' from within one, or kill-server below to restart all sessions."
+        fi
+
+        read -p "Kill all tmux sessions to force a full restart? This will terminate all tmux sessions. (y/N): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            tmux kill-server 2>/dev/null && echo "✅ All tmux sessions killed. Start tmux again to use the new config." || echo "⚠️ Failed to kill tmux server or no tmux server running."
+        else
+            echo "⏭️  Skipped killing tmux server."
+        fi
+        set -e
+    else
+        echo "⏭️  Skipped reloading tmux config. You can run 'tmux source-file ~/.tmux.conf' later."
+    fi
+else
+    echo "tmux not found on PATH; skipping tmux reload/kill prompts."
+fi
+
+# Optional: offer to source ~/.zshrc now
+echo ""
+read -p "Source ~/.zshrc now in this script process? Note: if you ran this script as a command, sourcing here won't affect your interactive shell. Run 'source ~/.zshrc' in your shell to apply changes there. Proceed? (y/N): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    # Sourcing inside this script will only affect the script process; still offer it for completeness
+    set +e
+    source "$HOME/.zshrc" 2>/dev/null
+    if [ $? -eq 0 ]; then
+        echo "✅ ~/.zshrc sourced in this process. If you launched this script as a standalone process, please run 'source ~/.zshrc' in your interactive shell to apply changes there." 
+    else
+        echo "⚠️ Failed to source ~/.zshrc in the script process. You can manually run: source ~/.zshrc"
+    fi
+    set -e
+else
+    echo "⏭️  Skipped sourcing ~/.zshrc. To apply changes in your shell, run: source ~/.zshrc"
+fi
