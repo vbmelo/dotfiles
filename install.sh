@@ -131,7 +131,7 @@ if [ -f "$TMUX_DEST" ]; then
     else
         echo "Differences found between $TMUX_DEST and $TMUX_SRC:"
         cat "$DIFF_TMP"
-        read -p "Replace $TMUX_DEST now? (y/N): " -n 1 -r
+        read -k 1 "REPLY?Replace $TMUX_DEST now? (y/N): "
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             cp "$TMUX_SRC" "$TMUX_DEST"
@@ -152,7 +152,7 @@ echo "⚠️  For .zshrc, you should manually merge or replace."
 echo "   Your backup is at: $BACKUP_DIR/.zshrc"
 echo "   New config is at: zsh/.zshrc"
 echo ""
-read -p "   Replace .zshrc now? (y/N): " -n 1 -r
+read -k 1 "REPLY?   Replace .zshrc now? (y/N): "
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     cp zsh/.zshrc "$HOME/.zshrc"
@@ -177,7 +177,7 @@ for f in config start-session.sh; do
         else
             echo "Differences found between $DEST_FILE and $SRC_FILE:"
             cat "$DIFF_TMP"
-            read -p "Replace $DEST_FILE now? (y/N): " -n 1 -r
+            read -k 1 "REPLY?Replace $DEST_FILE now? (y/N): "
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 cp "$SRC_FILE" "$DEST_FILE"
@@ -222,7 +222,7 @@ echo ""
 echo "🔁  Zsh config — source ~/.zshrc (note about interactive shells)"
 echo "──────────────────────────────────────────────────────────────"
 echo ""
-read -p "Source ~/.zshrc now in this script process? (This affects only this script process — to apply in your shell run 'source ~/.zshrc'). Proceed? (y/N): " -n 1 -r
+read -k 1 "REPLY?Source ~/.zshrc now in this script process? (y/N): "
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     # Sourcing inside this script will only affect the script process; still offer it for completeness
@@ -254,7 +254,7 @@ if command -v tmux &>/dev/null; then
     echo "🔁  TMUX configuration — reload or restart sessions"
     echo "──────────────────────────────────────────────"
     echo ""
-    read -p "Apply new tmux config now? This will run 'tmux source-file ~/.tmux.conf'. (y/N): " -n 1 -r
+    read -k 1 "REPLY?Apply new tmux config now? (y/N): "
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         # Temporarily disable errexit for optional commands
@@ -268,7 +268,7 @@ if command -v tmux &>/dev/null; then
             echo "   Reload current session:  tmux source-file ~/.tmux.conf"
             echo "   Force restart all sessions: tmux kill-server   # will terminate all tmux sessions"
             echo ""
-            read -p "Kill all tmux sessions to force a full restart? This will terminate all tmux sessions. (y/N): " -n 1 -r
+            read -k 1 "REPLY?Kill all tmux sessions to force a full restart? (y/N): "
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 tmux kill-server 2>/dev/null && echo "✅  All tmux sessions killed. Start tmux again to use the new config." || echo "⚠️  Failed to kill tmux server or no tmux server running."
