@@ -14,51 +14,56 @@ if ! command -v tmux &>/dev/null; then
     exit 1
 fi
 
+# Layout for project windows: screen split horizontally into two,
+# left portion split into three vertical (stacked) panes.
+#   Pane 1: top-left | Pane 2: middle-left | Pane 3: bottom-left | Pane 4: right
+create_project_window() {
+	local index="$1"
+	local name="$2"
+	local dir="$3"
+	local middle_dir="${4:-$3}"
+
+	if [ "$index" -eq 1 ]; then
+		$TMUX_BIN new-session -d -s main -n "$name" -c "$dir"
+	else
+		$TMUX_BIN new-window -t main:"$index" -n "$name" -c "$dir"
+	fi
+	$TMUX_BIN split-window -h -t main:"$index".1 -c "$dir"
+	$TMUX_BIN split-window -v -t main:"$index".1 -l '66%' -c "$middle_dir"
+	$TMUX_BIN split-window -v -t main:"$index".2 -l '50%' -c "$dir"
+	$TMUX_BIN select-pane -t main:"$index".1
+}
+
 # Only create session if it doesn't exist
 if ! $TMUX_BIN has-session -t main 2>/dev/null; then
-	# Window 1: Xtobox (left: 2 vertical panes, right: 1 full-height pane)
-	$TMUX_BIN new-session -d -s main -n "Xtobox" -c ~/Projects/xtobox
-	$TMUX_BIN split-window -h -t main:1 -c ~/Projects/xtobox
-	$TMUX_BIN select-pane -t main:1.0
-	$TMUX_BIN split-window -v -t main:1.0 -c ~/Projects/xtobox
+	# Window 1: Xtobox
+	create_project_window 1 "Xtobox" ~/Projects/xtobox
 
-	# Window 2: Neueria (left: 2 vertical panes, right: 1 full-height pane)
-	$TMUX_BIN new-window -t main:2 -n "Neueria" -c ~/Projects/pareva-frontend-neueria
-	$TMUX_BIN split-window -h -t main:2 -c ~/Projects/pareva-frontend-neueria
-	$TMUX_BIN select-pane -t main:2.0
-	$TMUX_BIN split-window -v -t main:2.0 -c ~/Projects/pareva-frontend-neueria
+	# Window 2: Neueria (middle-left pane starts in ~/Projects/xtobox)
+	create_project_window 2 "Neueria" ~/Projects/pareva-frontend-neueria ~/Projects/xtobox
 
-	# Window 3: Pareva Tools (left: 2 vertical panes, right: 1 full-height pane)
-	$TMUX_BIN new-window -t main:3 -n "Pareva Tools" -c ~/Projects/pareva-tools
-	$TMUX_BIN split-window -h -t main:3 -c ~/Projects/pareva-tools
-	$TMUX_BIN select-pane -t main:3.0
-	$TMUX_BIN split-window -v -t main:3.0 -c ~/Projects/pareva-tools
+	# Window 3: Pareva Tools (middle-left pane starts in ~/Projects/xtobox)
+	create_project_window 3 "Pareva Tools" ~/Projects/pareva-tools ~/Projects/xtobox
 
-	# Window 4: On Premise (horizontal split)
-	$TMUX_BIN new-window -t main:4 -n "On Premise" -c ~/Projects/on-premise
-	$TMUX_BIN split-window -h -t main:4 -c ~/Projects/on-premise
+	# Window 4: Rossmann (middle-left pane starts in ~/Projects/xtobox)
+	create_project_window 4 "Rossmann" ~/Projects/pareva-frontend-rossmann ~/Projects/xtobox
 
-	# Window 5: UA - CBD (horizontal split)
-	$TMUX_BIN new-window -t main:5 -n "UA - CBD" -c ~/Documents/UA/2025-2026/CBD
-	$TMUX_BIN split-window -h -t main:5 -c ~/Documents/UA/2025-2026/CBD
+	# Window 5: On Premise
+	create_project_window 5 "On Premise" ~/Projects/on-premise
 
-	# Window 6: UA - IES (horizontal split)
-	$TMUX_BIN new-window -t main:6 -n "UA - IES" -c ~/Documents/UA/2025-2026/IES
-	$TMUX_BIN split-window -h -t main:6 -c ~/Documents/UA/2025-2026/IES
+	# Window 6: ADB (horizontal split)
+	$TMUX_BIN new-window -t main:6 -n "ADB" -c ~/platform-tools
+	$TMUX_BIN split-window -h -t main:6 -c ~/platform-tools
 
-	# Window 7: ADB (horizontal split)
-	$TMUX_BIN new-window -t main:7 -n "ADB" -c ~/platform-tools
-	$TMUX_BIN split-window -h -t main:7 -c ~/platform-tools
+	# Window 7: Terminal (horizontal split)
+	$TMUX_BIN new-window -t main:7 -n "Terminal" -c ~/
+	$TMUX_BIN split-window -h -t main:7 -c ~/
 
-	# Window 8: Terminal (horizontal split)
-	$TMUX_BIN new-window -t main:8 -n "Terminal" -c ~/
-	$TMUX_BIN split-window -h -t main:8 -c ~/
-
-	# Window 9: Dotfiles (left: 2 vertical panes, right: 1 full-height pane)
-	$TMUX_BIN new-window -t main:9 -n "Dotfiles" -c ~/dotfiles
-	$TMUX_BIN split-window -h -t main:9 -c ~/dotfiles
-	$TMUX_BIN select-pane -t main:9.0
-	$TMUX_BIN split-window -v -t main:9.0 -c ~/dotfiles
+	# Window 8: Dotfiles (left: 2 vertical panes, right: 1 full-height pane)
+	$TMUX_BIN new-window -t main:8 -n "Dotfiles" -c ~/dotfiles
+	$TMUX_BIN split-window -h -t main:8 -c ~/dotfiles
+	$TMUX_BIN select-pane -t main:8.1
+	$TMUX_BIN split-window -v -t main:8.1 -c ~/dotfiles
 
 	# Select the first window
 	$TMUX_BIN select-window -t main:1
