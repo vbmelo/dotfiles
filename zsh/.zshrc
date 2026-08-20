@@ -96,6 +96,77 @@ plugins=(git zsh-autosuggestions zsh-syntax-highlighting web-search)
 
 source $ZSH/oh-my-zsh.sh
 
+# ============================================================================
+# "Marlin Frost" shell colors — tuned for a dark navy frosted-glass terminal.
+# Matches the Ghostty palette. Set AFTER oh-my-zsh so the plugins are loaded.
+# ============================================================================
+
+# --- zsh-syntax-highlighting -------------------------------------------------
+# Enable all highlighters (not just `main`) for full color-coding.
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
+typeset -gA ZSH_HIGHLIGHT_STYLES
+# Commands & callables
+ZSH_HIGHLIGHT_STYLES[command]='fg=#61ffca,bold'           # valid command -> green
+ZSH_HIGHLIGHT_STYLES[alias]='fg=#61ffca,bold'
+ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=#61ffca'
+ZSH_HIGHLIGHT_STYLES[global-alias]='fg=#61ffca'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=#82e2ff,bold'           # builtins -> cyan
+ZSH_HIGHLIGHT_STYLES[function]='fg=#a277ff,bold'          # functions -> purple
+ZSH_HIGHLIGHT_STYLES[precommand]='fg=#f694ff,italic'      # sudo, env, ...
+ZSH_HIGHLIGHT_STYLES[hashed-command]='fg=#61ffca'
+ZSH_HIGHLIGHT_STYLES[arg0]='fg=#61ffca'
+ZSH_HIGHLIGHT_STYLES[autodirectory]='fg=#82e2ff,underline'
+# Reserved words / control flow
+ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=#a277ff,bold'     # if/for/while -> purple
+ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=#f694ff'
+# Errors
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#ff6767,bold'     # unknown -> red
+# Options / flags
+ZSH_HIGHLIGHT_STYLES[single-hyphen-option]='fg=#ffca85'   # -x  -> orange
+ZSH_HIGHLIGHT_STYLES[double-hyphen-option]='fg=#ffca85'   # --xx
+# Paths
+ZSH_HIGHLIGHT_STYLES[path]='fg=#82e2ff,underline'
+ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=#82e2ff'
+ZSH_HIGHLIGHT_STYLES[path_pathseparator]='fg=#7e7799'
+ZSH_HIGHLIGHT_STYLES[path_prefix_pathseparator]='fg=#7e7799'
+# Quoted strings
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#61ffca'
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#61ffca'
+ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]='fg=#61ffca'
+ZSH_HIGHLIGHT_STYLES[rc-quote]='fg=#61ffca'
+# Variables, substitutions, globbing
+ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]='fg=#82e2ff'
+ZSH_HIGHLIGHT_STYLES[back-quoted-argument]='fg=#82e2ff'
+ZSH_HIGHLIGHT_STYLES[command-substitution]='fg=#82e2ff'
+ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter]='fg=#f694ff'
+ZSH_HIGHLIGHT_STYLES[process-substitution]='fg=#82e2ff'
+ZSH_HIGHLIGHT_STYLES[process-substitution-delimiter]='fg=#f694ff'
+ZSH_HIGHLIGHT_STYLES[assign]='fg=#6b8cc2'
+ZSH_HIGHLIGHT_STYLES[redirection]='fg=#f694ff,bold'
+ZSH_HIGHLIGHT_STYLES[globbing]='fg=#f694ff'
+ZSH_HIGHLIGHT_STYLES[history-expansion]='fg=#f694ff'
+ZSH_HIGHLIGHT_STYLES[comment]='fg=#7e7799,italic'         # comments -> dim lavender-grey
+ZSH_HIGHLIGHT_STYLES[default]='fg=#6b8cc2'                # everything else -> soft steel blue
+# brackets highlighter
+ZSH_HIGHLIGHT_STYLES[bracket-error]='fg=#ff6767,bold'
+ZSH_HIGHLIGHT_STYLES[bracket-level-1]='fg=#a277ff,bold'
+ZSH_HIGHLIGHT_STYLES[bracket-level-2]='fg=#61ffca,bold'
+ZSH_HIGHLIGHT_STYLES[bracket-level-3]='fg=#82e2ff,bold'
+ZSH_HIGHLIGHT_STYLES[bracket-level-4]='fg=#f694ff,bold'
+ZSH_HIGHLIGHT_STYLES[cursor-matchingbracket]='standout'
+
+# --- zsh-autosuggestions -----------------------------------------------------
+# Dim lavender-grey so suggestions are visible but clearly not yet typed.
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#7e7799'
+
+# --- ls / completion colors --------------------------------------------------
+export CLICOLOR=1
+# BSD ls (macOS): bold cyan dirs, bold magenta symlinks -> readable on navy.
+export LSCOLORS='GxFxcxdxbxegedabagacad'
+# GNU ls + zsh completion menu coloring.
+export LS_COLORS='di=1;36:ln=1;35:so=35:pi=33:ex=1;32:bd=33;1:cd=33;1:su=37;41:sg=30;43:tw=30;42:ow=34;42'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"

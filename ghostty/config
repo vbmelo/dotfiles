@@ -1,6 +1,41 @@
-### THEMES ###
-theme = Laser
-background-opacity = 0.8
+### COLORS — "Aura Dark" ###
+# Port of the Aura theme (github.com/daltonmenezes/aura-theme) — the same
+# palette used in VSCode/Cursor. Signature look: purple #a277ff, green
+# #61ffca, cyan #82e2ff, pink #f694ff, orange #ffca85 on a neutral near-black
+# background (#08070b, near-black). Foreground is a soft steel blue (#6b8cc2) instead of
+# white, so body text (incl. Claude Code prose) reads tinted/colorful rather
+# than flat white. Matches the zsh syntax highlighting and p10k colors.
+# To revert to stock: replace this block with `theme = Laser`.
+
+background = #08070b
+foreground = #6b8cc2
+cursor-color = #a277ff
+cursor-text = #08070b
+selection-background = #2a2535
+selection-foreground = #e0d6ff
+
+# Normal colors:   black     red       green     yellow    blue/purple  magenta   cyan      white
+palette = 0=#110f18
+palette = 1=#ff6767
+palette = 2=#61ffca
+palette = 3=#ffca85
+palette = 4=#a277ff
+palette = 5=#f694ff
+palette = 6=#82e2ff
+palette = 7=#6b8cc2
+# Bright colors:
+palette = 8=#7e7799
+palette = 9=#ff8b8b
+palette = 10=#7dffd4
+palette = 11=#ffd9a3
+palette = 12=#b79bff
+palette = 13=#ffb0ff
+palette = 14=#a3ebff
+palette = 15=#e0d6ff
+
+# Neutral near-black background; opacity keeps the frosted glass while staying
+# crisp. Tune to taste: 0.92 = max readability, 0.78 = more transparent glass.
+background-opacity = 0.85
 background-blur-radius = 30
 
 ### FONTS ###
