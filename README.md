@@ -26,6 +26,8 @@ dotfiles/
 │   └── .tmux.conf              # TMUX configuration
 ├── zsh/
 │   └── .zshrc                  # Zsh configuration
+├── macos/
+│   └── airplay-hisense-proxy.sh # AirPlay fix for Hisense VIDAA TV
 ├── install.sh                   # Automated installation script
 └── README.md                    # This file
 ```
@@ -178,6 +180,27 @@ Ensure your terminal is set to use true color:
 ```bash
 echo $TERM  # Should be "tmux-256color" inside TMUX
 ```
+
+### AirPlay: Hisense VIDAA TV missing from Screen Mirroring
+
+The TV's AirPlay 2 receiver is fine (port 7000 is open and answers `/info`) — what
+fails is **discovery**: this Wi-Fi drops mDNS multicast (224.0.0.251), so the TV's
+Bonjour announcement never reaches the Mac. Note that `ping` to the TV always fails
+because the TV drops ICMP; that is not a network problem.
+
+Workaround — ask the TV for the TXT record it *would* advertise and register it
+locally, bypassing multicast entirely:
+
+```bash
+./macos/airplay-hisense-proxy.sh start      # then: Control Center -> Screen Mirroring
+./macos/airplay-hisense-proxy.sh status
+./macos/airplay-hisense-proxy.sh stop
+./macos/airplay-hisense-proxy.sh diag       # 30s tcpdump, pinpoints the root cause (needs sudo)
+./macos/airplay-hisense-proxy.sh install-agent   # persist across reboot
+```
+
+The real fix is upstream: either IGMP Snooping on the router, or Internet Sharing
+interfering with `mDNSResponder`. Run `diag` to find out which.
 
 ## 🤝 Contributing
 
