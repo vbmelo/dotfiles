@@ -28,6 +28,11 @@ dotfiles/
 │   └── .zshrc                  # Zsh configuration
 ├── macos/
 │   └── airplay-hisense-proxy.sh # AirPlay fix for Hisense VIDAA TV
+├── claude/
+│   ├── output-styles/caveman.md # Caveman output style (terse prose)
+│   ├── commands/caveman.md      # /caveman slash command
+│   ├── caveman-toggle.sh        # Toggles Caveman prose + ponytail together
+│   └── install-caveman-ponytail.sh # Installs both into ~/.claude
 ├── install.sh                   # Automated installation script
 └── README.md                    # This file
 ```
@@ -201,6 +206,57 @@ locally, bypassing multicast entirely:
 
 The real fix is upstream: either IGMP Snooping on the router, or Internet Sharing
 interfering with `mDNSResponder`. Run `diag` to find out which.
+
+## 🦴 Claude Code: Caveman + ponytail
+
+Two settings that cover different halves of the same taste, driven by one switch.
+
+- **Caveman** is an [output style](https://docs.claude.com/en/docs/claude-code/output-styles):
+  how the agent *talks*. No preamble, no closing recap, no praise; answer in the
+  first words. Code, commands, paths, identifiers, error text and stated risks are
+  never compressed — brevity is not allowed to buy a vaguer answer.
+- **[ponytail](https://github.com/DietrichGebert/ponytail)** is a plugin: what the
+  agent *builds*. It climbs a YAGNI ladder before writing code — does this need to
+  exist, is it already in the codebase, does the stdlib or a native platform feature
+  cover it, can it be one line — and never simplifies away validation, error
+  handling, security or accessibility.
+
+ponytail's own skill file says to pair it with Caveman, which is what this setup
+does: `/caveman` writes both settings at once so they cannot drift apart.
+
+### Install
+
+```bash
+./claude/install-caveman-ponytail.sh              # install and enable both
+./claude/install-caveman-ponytail.sh --no-enable  # install only
+```
+
+It copies the output style, the slash command and the toggle script into
+`~/.claude` (backing up anything it replaces), rewrites the absolute paths in the
+command for your home directory, and installs the ponytail plugin through Claude
+Code's plugin manager. ponytail is deliberately *not* vendored here — it has its
+own release cadence, so only the glue lives in this repo.
+
+Needs `claude` and `python3`, plus `node` on the **non-interactive** shell's PATH
+for ponytail's lifecycle hooks (relevant for nvm and Nix users).
+
+### Usage
+
+| Command | Effect |
+|---|---|
+| `/caveman on` | Both on, ponytail at `full` |
+| `/caveman on lite` | Caveman prose + ponytail names the lazier option, you pick |
+| `/caveman on ultra` | Caveman prose + YAGNI extremist |
+| `/caveman off` | Both off |
+| `/caveman` | Toggle |
+| `/caveman status` | Report both |
+
+The ponytail level applies immediately; an output style change may need a new
+session. `/ponytail lite|full|ultra|off` still changes the code side alone.
+
+The toggle writes three places: `outputStyle` in `~/.claude/settings.json`,
+the live mode in `~/.claude/.ponytail-active`, and `defaultMode` in
+`~/.config/ponytail/config.json` (so it survives a restart).
 
 ## 🤝 Contributing
 
