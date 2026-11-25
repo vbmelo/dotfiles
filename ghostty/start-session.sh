@@ -48,22 +48,25 @@ if ! $TMUX_BIN has-session -t main 2>/dev/null; then
 	# Window 4: Rossmann (middle-left pane starts in ~/Projects/xtobox)
 	create_project_window 4 "Rossmann" ~/Projects/pareva-frontend-rossmann ~/Projects/xtobox
 
-	# Window 5: On Premise
-	create_project_window 5 "On Premise" ~/Projects/on-premise
+	# Window 5: MyBox Public (middle-left pane starts in ~/Projects/xtobox)
+	create_project_window 5 "MyBox Public" ~/Projects/pareva-frontend-mybox-public ~/Projects/xtobox
 
-	# Window 6: ADB (horizontal split)
-	$TMUX_BIN new-window -t main:6 -n "ADB" -c ~/platform-tools
-	$TMUX_BIN split-window -h -t main:6 -c ~/platform-tools
+	# Window 6: On Premise
+	create_project_window 6 "On Premise" ~/Projects/on-premise
 
-	# Window 7: Terminal (horizontal split)
-	$TMUX_BIN new-window -t main:7 -n "Terminal" -c ~/
-	$TMUX_BIN split-window -h -t main:7 -c ~/
+	# Window 7: ADB (horizontal split)
+	$TMUX_BIN new-window -t main:7 -n "ADB" -c ~/platform-tools
+	$TMUX_BIN split-window -h -t main:7 -c ~/platform-tools
 
-	# Window 8: Dotfiles (left: 2 vertical panes, right: 1 full-height pane)
-	$TMUX_BIN new-window -t main:8 -n "Dotfiles" -c ~/dotfiles
-	$TMUX_BIN split-window -h -t main:8 -c ~/dotfiles
-	$TMUX_BIN select-pane -t main:8.1
-	$TMUX_BIN split-window -v -t main:8.1 -c ~/dotfiles
+	# Window 8: Terminal (horizontal split)
+	$TMUX_BIN new-window -t main:8 -n "Terminal" -c ~/
+	$TMUX_BIN split-window -h -t main:8 -c ~/
+
+	# Window 9: Dotfiles (left: 2 vertical panes, right: 1 full-height pane)
+	$TMUX_BIN new-window -t main:9 -n "Dotfiles" -c ~/dotfiles
+	$TMUX_BIN split-window -h -t main:9 -c ~/dotfiles
+	$TMUX_BIN select-pane -t main:9.1
+	$TMUX_BIN split-window -v -t main:9.1 -c ~/dotfiles
 
 	# Select the first window
 	$TMUX_BIN select-window -t main:1
